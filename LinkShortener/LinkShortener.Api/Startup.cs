@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using LinkShortener.Api.Identity;
+using LinkShortener.Api.IdGenerator;
+using LinkShortener.Api.Middlewares;
+using LinkShortener.Api.Repo;
+using LinkShortener.Api.Repo.MongoDb;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Shortener.Lib;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace LinkShortener.Api
@@ -27,6 +28,18 @@ namespace LinkShortener.Api
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            services.AddScoped<IHttpContextIdentifier, CookiesIdentifier>();
+            services.AddSingleton<IMongoDbProvider, LocalhostShortenerMongoDbProvider>();
+            services.AddScoped<ILinksRepository, MongoLinksRepository>();
+            services.AddScoped<IShortener, Base62ByIdShortener>();
+
+            services.AddScoped<ICounterRepository, MongoCounterRepository>();
+            services.AddScoped<ILinksIdGenerator, MongoIncrementorIdGenerator>();
+            //services.AddTransient<MongoIncrementorIdGenerator>();
+            //services.AddSingleton<ILinksIdGenerator>(provider => new CachingLinksGenerator(
+            //    provider.GetService<IMemoryCache>(),
+            //    provider.GetService<MongoIncrementorIdGenerator>()));
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info {Title = "Link shortener API", Version = "v1"});
@@ -44,6 +57,7 @@ namespace LinkShortener.Api
             app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Link shortener API v1"); });
+            app.UseMiddleware<JsonAllErrorHandlingMiddleware>();
         }
     }
 }
