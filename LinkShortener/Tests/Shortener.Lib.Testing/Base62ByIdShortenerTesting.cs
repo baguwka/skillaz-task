@@ -56,7 +56,7 @@ namespace Shortener.Lib.Testing
                 yield return new TestCaseData("htt://asd.ru");
                 yield return new TestCaseData("://asd.ru");
                 yield return new TestCaseData("asd.ru");
-                yield return new TestCaseData("http://asd");
+                yield return new TestCaseData("http:/asd.ru");
             }
         }
 
