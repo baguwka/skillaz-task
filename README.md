@@ -9,3 +9,6 @@
 # Requirements
 - MongoDB service.
 - .Net Core 2.1 (lts)
+
+# Notes
+In order to achive non-sequiential ids generation, you need to create a new implementation of `ILinksShortener`. Current implementation `Base62ByIdLinksShortener` allows to iterate ids alphabetical.
