@@ -7,6 +7,7 @@ using LinkShortener.Api.Repo.DomainModel;
 using LinkShortener.Api.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Shortener.Lib;
+using Shortener.Lib.Shorten;
 
 namespace LinkShortener.Api.Controllers
 {
@@ -15,17 +16,17 @@ namespace LinkShortener.Api.Controllers
     public class LinkShortenerController : Controller
     {
         private readonly IHttpContextIdentifier _Identifier;
-        private readonly IShortener _Shortener;
+        private readonly ILinksShortener _LinksShortener;
         private readonly ILinksRepository _LinksRepository;
 
         public LinkShortenerController(
             IHttpContextIdentifier identifier, 
-            IShortener shortener, 
+            ILinksShortener linksShortener, 
             ILinksRepository linksRepository
         )
         {
             _Identifier = identifier ?? throw new ArgumentNullException(nameof(identifier));
-            _Shortener = shortener ?? throw new ArgumentNullException(nameof(shortener));
+            _LinksShortener = linksShortener ?? throw new ArgumentNullException(nameof(linksShortener));
             _LinksRepository = linksRepository ?? throw new ArgumentNullException(nameof(linksRepository));
         }
 
@@ -34,7 +35,7 @@ namespace LinkShortener.Api.Controllers
         public async Task<IActionResult> ShortenLink([FromForm] string url)
         {
             var identity = _Identifier.GetOrCreateIdentity(HttpContext);
-            var shortenResult = await _Shortener.ShortenAsync(url);
+            var shortenResult = await _LinksShortener.ShortenAsync(url);
 
             var linkToAdd = new LinkModel
             {

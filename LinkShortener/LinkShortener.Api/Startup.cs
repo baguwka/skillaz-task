@@ -10,6 +10,8 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shortener.Lib;
+using Shortener.Lib.Ids;
+using Shortener.Lib.Shorten;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace LinkShortener.Api
@@ -31,8 +33,9 @@ namespace LinkShortener.Api
             services.AddScoped<IHttpContextIdentifier, CookiesIdentifier>();
             services.AddSingleton<IMongoDbProvider, LocalhostShortenerMongoDbProvider>();
             services.AddScoped<ILinksRepository, MongoLinksRepository>();
-            services.AddScoped<IShortener, Base62ByIdShortener>();
+            services.AddScoped<ILinksShortener, Base62ByIdLinksShortener>();
 
+            services.AddScoped<IUrlValidator, BclUrlValidator>();
             services.AddScoped<ICounterRepository, MongoCounterRepository>();
             services.AddScoped<ILinksIdGenerator, MongoIncrementorIdGenerator>();
             //services.AddTransient<MongoIncrementorIdGenerator>();
@@ -54,10 +57,10 @@ namespace LinkShortener.Api
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseMiddleware<JsonAllErrorHandlingMiddleware>();
             app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Link shortener API v1"); });
-            app.UseMiddleware<JsonAllErrorHandlingMiddleware>();
         }
     }
 }

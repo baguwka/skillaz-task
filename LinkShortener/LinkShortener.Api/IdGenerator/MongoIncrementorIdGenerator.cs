@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using LinkShortener.Api.Repo;
-using Shortener.Lib;
+using Shortener.Lib.Ids;
 
 namespace LinkShortener.Api.IdGenerator
 {

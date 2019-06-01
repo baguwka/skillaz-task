@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Shortener.Lib;
+using Shortener.Lib.Ids;
 
 namespace LinkShortener.Api.Repo
 {

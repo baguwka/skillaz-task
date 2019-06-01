@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using Shortener.Lib.Exceptions;
 
 namespace LinkShortener.Api.Middlewares
 {
@@ -15,7 +16,7 @@ namespace LinkShortener.Api.Middlewares
             _Next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task InvokeAsync(HttpContext context)
         {
             try
             {
@@ -30,6 +31,9 @@ namespace LinkShortener.Api.Middlewares
         private Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             var code = HttpStatusCode.InternalServerError;
+
+            if (exception is UrlIsInvalidException || exception is UrlIsMissingException)
+                code = HttpStatusCode.BadRequest;
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)code;

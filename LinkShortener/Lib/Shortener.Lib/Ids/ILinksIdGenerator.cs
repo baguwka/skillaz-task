@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Shortener.Lib
+namespace Shortener.Lib.Ids
 {
     public interface ILinksIdGenerator
     {
